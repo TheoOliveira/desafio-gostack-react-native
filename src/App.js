@@ -18,23 +18,23 @@ export default function App() {
 
 useEffect(()=>{
   api.get('repositories').then((response)=>{
-    console.log(response.data);
+    
     setRepo(response.data);
   });
 }, []);
-  async function handleLikeRepository(id) {
-   const response = await api.post(`repositories/${id}/like`, (req,res)=> {
-    const {id} = req.params;
+  async function handleLikeRepository(id) { 
+    const response = await api.post(`repositories/${id}/like`);     
 
-    const repoIndex = repositories.findIndex((repository)=>repository.id == id);
+    const repoIndex = repositories.findIndex((repository)=>repository.id === id);
     if(repoIndex <0){
-      return res.status(400).json({error:  'repository not found'});
+      console.log('erro, nao existe')
     }
-    repositories[repoIndex] = {...repositories[repoIndex], likes: repositories[repoIndex].likes + 1}
-    return response;
-  })
+    
+let updatedRepo = [...repositories];
+updatedRepo[repoIndex] = response.data;
   
-  return response.status(200).json(repositories[repoIndex]);
+  setRepo(updatedRepo);
+  
 
   }
 
@@ -59,13 +59,13 @@ useEffect(()=>{
               // Remember to replace "1" below with repository ID: {`repository-likes-${repository.id}`}
               testID={`repository-likes-${repository.id}`}
             >
-              {repository.likes}
+              {`${repository.likes} = 1 ? ${repository.likes} curtida: ${repository.likes} curtidas`}
             </Text>
           </View>
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => handleLikeRepository(1)}
+            onPress={() => handleLikeRepository(repository.id)}
             
             // Remember to replace "1" below with repository ID: {`like-button-${repository.id}`}
             testID={`like-button-${repository.id}`}
